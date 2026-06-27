@@ -1,3 +1,4 @@
+import os
 import webbrowser
 import subprocess
 import string
@@ -19,6 +20,18 @@ APPS = {
 }
 
 
+# ===================== FOLDERS =====================
+
+FOLDERS = {
+    "desktop": os.path.join(os.path.expanduser("~"), "Desktop"),
+    "documents": os.path.join(os.path.expanduser("~"), "Documents"),
+    "downloads": os.path.join(os.path.expanduser("~"), "Downloads"),
+    "pictures": os.path.join(os.path.expanduser("~"), "Pictures"),
+    "music": os.path.join(os.path.expanduser("~"), "Music"),
+    "videos": os.path.join(os.path.expanduser("~"), "Videos"),
+}
+
+
 # ===================== COMMAND HANDLER =====================
 
 def handle_command(command):
@@ -29,36 +42,55 @@ def handle_command(command):
 
     print(f"Executing command: {command}")
 
-    # ================= OPEN APPLICATIONS =================
+    # ================= OPEN =================
 
     if command.startswith("open "):
 
-        app_name = command.replace("open", "", 1).strip()
+        item = command.replace("open", "", 1).strip()
 
-        if app_name in APPS:
+        # ---------- Applications ----------
+
+        if item in APPS:
             try:
-                subprocess.Popen(APPS[app_name])
-                speak(f"Opening {app_name}")
+                subprocess.Popen(APPS[item])
+                speak(f"Opening {item}")
                 return
             except Exception as e:
                 print(e)
                 speak("Sorry, I couldn't open that application.")
                 return
 
-        # Open websites
-        elif app_name == "google":
+        # ---------- Folders ----------
+
+        elif item in FOLDERS:
+            try:
+                subprocess.Popen(f'explorer "{FOLDERS[item]}"')
+                speak(f"Opening {item}")
+                return
+            except Exception as e:
+                print(e)
+                speak("Sorry, I couldn't open that folder.")
+                return
+
+        # ---------- Websites ----------
+
+        elif item == "google":
             speak("Opening Google")
             webbrowser.open("https://www.google.com")
             return
 
-        elif app_name == "youtube":
+        elif item == "youtube":
             speak("Opening YouTube")
             webbrowser.open("https://www.youtube.com")
             return
 
-        elif app_name == "github":
+        elif item == "github":
             speak("Opening GitHub")
             webbrowser.open("https://github.com")
+            return
+
+        else:
+            speak("I don't know how to open that.")
             return
 
     # ================= MUSIC =================
@@ -89,7 +121,7 @@ def handle_command(command):
 
     elif "your name" in command:
 
-        speak("My name is Comeback.")
+        speak("My name is Orion.")
         return
 
     # ================= STOP =================
@@ -101,5 +133,7 @@ def handle_command(command):
 
     # ================= UNKNOWN =================
 
-    speak("Sorry, I don't know that command yet.")
+    else:
+        speak("Sorry, I don't know that command yet.")
+
     return None
