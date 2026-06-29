@@ -1,80 +1,80 @@
-# Orion – My Voice Assistant
+# 🎙️ Orion – Python Voice Assistant
 
-## 🚀 About
+Orion is a modular voice assistant built in Python using Faster-Whisper for speech recognition and Text-to-Speech for voice responses.
 
-Orion is a Python-based voice assistant inspired by assistants like Alexa and Google Assistant. It uses voice commands to perform everyday tasks such as opening applications, launching websites, playing music, and answering basic queries.
-
-This project is being built from scratch as a learning project with the goal of creating a powerful desktop AI assistant.
+The goal of this project is to build a personal assistant similar to Alexa or Google Assistant while following good software engineering practices such as modular architecture, configuration management, and version control.
 
 ---
 
-## ✨ Current Features
+## ✨ Features
 
-* 🎙️ Wake word activation ("come back")
-* 🗣️ Speech recognition using Faster Whisper
+* 🎤 Wake word detection ("Come back")
+* 🗣️ Speech recognition using Faster-Whisper
 * 🔊 Text-to-Speech responses
-* 🌐 Open websites (Google, YouTube, GitHub)
 * 💻 Open desktop applications
-* 🎵 Play songs from YouTube
-* ⏰ Tell the current time
-* 🪪 Introduce itself
-* 🛑 Voice command to stop the assistant
+* 📂 Open folders
+* 🌐 Open websites
+* 🔍 Google Search
+* 🎵 Play music from voice commands
+* 📝 Create notes
+* 🌡️ Live temperature information using the OpenWeather API
+* ⚙️ Modular project architecture
+* 🔐 Secure API key management using `.env`
+* 📦 Git & GitHub version control
 
 ---
 
 ## 🛠️ Technologies Used
 
 * Python 3.14
-* Faster Whisper
-* CTranslate2
-* sounddevice
-* NumPy
-* yt-dlp
-* webbrowser
-* subprocess
+* Faster-Whisper
+* SpeechRecognition
+* pyttsx3
+* Requests
+* python-dotenv
+* OpenWeather API
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```text
 Orion/
+│
+├── config/
+├── data/
+├── services/
+├── skills/
+├── utils/
 │
 ├── Main.py
 ├── commands.py
 ├── speech.py
 ├── speak.py
 ├── music.py
-├── mic_test.py
-├── requirement.txt
-└── .gitignore
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## ⚙️ Installation
+## 🚀 Getting Started
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/SarvadnyaDhondge/Orion-My-voice-assistant.git
-```
-
-2. Go to the project folder:
+1. Clone the repository.
+2. Create and activate a virtual environment.
+3. Install the dependencies:
 
 ```bash
-cd Orion-My-voice-assistant
+pip install -r requirements.txt
 ```
 
-3. Create and activate a virtual environment.
+4. Create a `.env` file in the project root:
 
-4. Install the required packages:
-
-```bash
-pip install -r requirement.txt
+```env
+WEATHER_API_KEY=your_openweather_api_key
 ```
 
-5. Run Orion:
+5. Run the assistant:
 
 ```bash
 python Main.py
@@ -82,54 +82,25 @@ python Main.py
 
 ---
 
-## 🎤 Example Commands
+## 📌 Current Version
 
-* come back open google
-* come back open chrome
-* come back open calculator
-* come back play believer
-* come back what is the time
-* come back what is your name
-* come back stop
+**Orion v0.7**
 
 ---
 
-## 🗺️ Roadmap
+## 🎯 Future Features
 
-### ✅ Completed
-
-* Wake word detection
-* Speech recognition
-* Text-to-Speech
-* Website launcher
-* Desktop application launcher
-* Music playback
-* Time queries
-
-### 🚧 Coming Soon
-
-* Weather information
-* Web search
-* Notes and reminders
-* Folder navigation
-* AI-powered conversations
-* Camera and vision features
-* GUI for Orion
-* Memory and personalization
-* Smart home integrations
+* ⏰ Reminders
+* 📅 Calendar integration
+* 📧 Email support
+* 🤖 AI chat assistant
+* 📰 News updates
+* 📸 Screenshot utility
+* 🔋 System monitoring
+* 🔊 Volume and brightness control
 
 ---
 
-## 🤝 Contributing
+## 👨‍💻 Author
 
-Contributions, suggestions, and feedback are always welcome.
-
----
-
-## 📄 License
-
-This project is currently available for learning and personal use.
-
----
-
-**Created with ❤️ by Sarvadnya Dhondge**
+**Sarvadnya Dhondge**
