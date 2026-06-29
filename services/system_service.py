@@ -19,6 +19,7 @@ Those responsibilities belong to skills/system.py.
 """
 
 import psutil
+import socket
 
 
 def get_battery_status():
@@ -117,3 +118,21 @@ def get_disk_usage():
         "total_gb": round(disk.total / (1024 ** 3), 2),
         "free_gb": round(disk.free / (1024 ** 3), 2)
     }
+
+def get_internet_status():
+    """
+    Check whether the computer has an active internet connection.
+
+    Returns
+    -------
+    bool
+        True  -> Internet is available.
+        False -> No internet connection.
+    """
+    
+    try:
+        # Attempt to connect to a well-known website (Google)
+        socket.create_connection(("8.8.8.8", 53), timeout=5)
+        return True
+    except OSError:
+        return False

@@ -18,6 +18,7 @@ from services.system_service import (
     get_cpu_usage,
     get_ram_usage,
     get_disk_usage,
+    get_internet_status,
 )
 
 BATTERY_COMMANDS = [
@@ -51,6 +52,17 @@ DISK_COMMANDS = [
     "storage",
     "storage usage",
     "drive usage"
+]
+
+INTERNET_COMMANDS = [
+    "internet",
+    "internet status",
+    "internet connection",
+    "network",
+    "network status",
+    "check internet",
+    "am i connected",
+    "am i connected to the internet",
 ]
 
 
@@ -105,6 +117,14 @@ def handle_system(command):
         f"You are using {disk['used_gb']} gigabytes "
         f"out of {disk['total_gb']} gigabytes."
         )
+        return True
+    
+    if command in INTERNET_COMMANDS:
+        internet = get_internet_status()
+        if internet:
+            speak("You are connected to the internet.")
+        else:
+            speak("You are not connected to the internet.")
         return True
 
     return False
