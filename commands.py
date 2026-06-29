@@ -10,6 +10,7 @@ from skills.player import play_music
 from skills.search import search_google
 from skills.notes import handle_notes
 from skills.weather import handle_weather
+from skills.reminder import handle_reminder
 
 
 # ===================== COMMAND HANDLER =====================
@@ -46,6 +47,11 @@ def handle_command(command):
         speak("I don't know how to open that.")
         return
 
+    # ================= REMINDERS =================
+    
+    elif handle_reminder(command):
+        return
+        
     # ================= MUSIC =================
 
     elif play_music(command):

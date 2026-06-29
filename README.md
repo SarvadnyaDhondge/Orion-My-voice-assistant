@@ -18,6 +18,7 @@ The goal of this project is to build a personal assistant similar to Alexa or Go
 * 🎵 Play music from voice commands
 * 📝 Create notes
 * 🌡️ Live temperature information using the OpenWeather API
+* ⏰ Reminders Management
 * ⚙️ Modular project architecture
 * 🔐 Secure API key management using `.env`
 * 📦 Git & GitHub version control
@@ -84,13 +85,12 @@ python Main.py
 
 ## 📌 Current Version
 
-**Orion v0.7**
+**Orion v0.8**
 
 ---
 
 ## 🎯 Future Features
 
-* ⏰ Reminders
 * 📅 Calendar integration
 * 📧 Email support
 * 🤖 AI chat assistant
