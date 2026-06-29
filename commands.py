@@ -11,6 +11,7 @@ from skills.search import search_google
 from skills.notes import handle_notes
 from skills.weather import handle_weather
 from skills.reminder import handle_reminder
+from skills.system import handle_system
 
 
 # ===================== COMMAND HANDLER =====================
@@ -47,16 +48,6 @@ def handle_command(command):
         speak("I don't know how to open that.")
         return
 
-    # ================= REMINDERS =================
-    
-    elif handle_reminder(command):
-        return
-        
-    # ================= MUSIC =================
-
-    elif play_music(command):
-        return
-
     # ================= SEARCH =================
 
     elif search_google(command):
@@ -65,6 +56,21 @@ def handle_command(command):
     # ================= WEATHER =================
     
     elif handle_weather(command):
+        return
+        
+    # ================= REMINDERS =================
+    
+    elif handle_reminder(command):
+        return
+
+    # ================= SYSTEM =================
+
+    if handle_system(command):
+        return
+
+    # ================= MUSIC =================
+
+    elif play_music(command):
         return
 
     # ================= NOTES =================
