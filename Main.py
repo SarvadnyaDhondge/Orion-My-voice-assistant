@@ -1,14 +1,34 @@
+"""
+Main.py
+
+Entry point for Orion.
+
+Workflow:
+1. Wait for the wake word.
+2. Listen to the user.
+3. Normalize the spoken text.
+4. Execute the command.
+"""
+
+import time
+
 from speak import speak
 from speech import listen
 from commands import handle_command
-import time
+from utils.command_normalizer import normalize_command
 
-WAKE_WORD = "come back"  # Set your desired wake word here
+
+WAKE_WORD = "come back"
+
 
 speak("Initializing Comeback")
 
 
 def clean_text(text):
+    """
+    Basic cleanup before normalization.
+    """
+
     if not text:
         return ""
 
@@ -22,36 +42,53 @@ def clean_text(text):
 
 while True:
 
-    print("Waiting for wake word...")
+    print("\nWaiting for wake word...")
 
-    text = listen()
-    text = clean_text(text)
+    # ---------------- Listen ----------------
 
-    if not text:
+    raw_text = listen()
+
+    raw_text = clean_text(raw_text)
+
+    if not raw_text:
         continue
 
-    print("Heard:", text)
+    text = normalize_command(raw_text)
 
-    # 🔥 CASE 1 & CASE 2 HANDLING
+    print("Raw        :", raw_text)
+    print("Normalized :", text)
+
+    # ---------------- Wake Word ----------------
+
     if WAKE_WORD in text:
 
-        # remove wake word
         command = text.replace(WAKE_WORD, "").strip()
 
-        # CASE 2: wake word + command together
+        # Wake word + command together
         if command:
+
             print("Direct command:", command)
+
             result = handle_command(command)
 
-        # CASE 1: only wake word
+        # Only wake word
         else:
-            speak("Yes?")
-            command = listen()
-            command = clean_text(command)
 
-            if command:
-                print("Command:", command)
-                result = handle_command(command)
+            speak("Yes?")
+
+            raw_command = listen()
+
+            raw_command = clean_text(raw_command)
+
+            if not raw_command:
+                continue
+
+            command = normalize_command(raw_command)
+
+            print("Raw command        :", raw_command)
+            print("Normalized command :", command)
+
+            result = handle_command(command)
 
     else:
         continue

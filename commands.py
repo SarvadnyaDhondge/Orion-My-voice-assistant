@@ -7,6 +7,9 @@ from skills.apps import open_app
 from skills.folders import open_folder
 from skills.websites import open_website
 from skills.player import play_music
+from skills.search import search_google
+from skills.notes import handle_notes
+from skills.weather import handle_weather
 
 
 # ===================== COMMAND HANDLER =====================
@@ -48,6 +51,21 @@ def handle_command(command):
     elif play_music(command):
         return
 
+    # ================= SEARCH =================
+
+    elif search_google(command):
+        return
+
+    # ================= WEATHER =================
+    
+    elif handle_weather(command):
+        return
+
+    # ================= NOTES =================
+    
+    elif handle_notes(command):
+        return
+        
     # ================= TIME =================
 
     elif "time" in command:
