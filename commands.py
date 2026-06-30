@@ -12,6 +12,7 @@ from skills.notes import handle_notes
 from skills.weather import handle_weather
 from skills.reminder import handle_reminder
 from skills.system import handle_system
+from skills.volume import handle_volume
 
 
 # ===================== COMMAND HANDLER =====================
@@ -65,7 +66,7 @@ def handle_command(command):
 
     # ================= SYSTEM =================
 
-    if handle_system(command):
+    elif handle_system(command):
         return
 
     # ================= MUSIC =================
@@ -78,6 +79,11 @@ def handle_command(command):
     elif handle_notes(command):
         return
         
+    # ================= VOLUME =================
+
+    elif handle_volume(command):
+        return
+
     # ================= TIME =================
 
     elif "time" in command:
