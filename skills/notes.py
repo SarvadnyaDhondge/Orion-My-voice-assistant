@@ -15,19 +15,33 @@ Benefits:
 - commands.py only decides WHICH skill should handle a command
 """
 
-import os
+from pathlib import Path
 
 from speak import speak
 from speech import listen
 
 
-# Path to the notes file.
-NOTES_FILE = os.path.join("data", "notes.txt")
+DATA_DIRECTORY = Path("data")
+NOTES_FILE = DATA_DIRECTORY / "notes.txt"
+
+
+ADD_NOTE_COMMANDS = [
+    "take a note",
+    "write a note",
+    "save a note",
+]
+
+SHOW_NOTE_COMMANDS = [
+    "show my notes",
+    "show notes",
+    "read my notes",
+    "read notes",
+]
 
 
 def add_note():
     """
-    Records a voice note and saves it to notes.txt.
+    Record a voice note and save it.
     """
 
     speak("What should I write?")
@@ -38,6 +52,14 @@ def add_note():
         speak("I didn't hear anything.")
         return
 
+    note = note.strip()
+
+    if not note:
+        speak("I didn't hear anything.")
+        return
+
+    DATA_DIRECTORY.mkdir(parents=True, exist_ok=True)
+
     with open(NOTES_FILE, "a", encoding="utf-8") as file:
         file.write(note + "\n")
 
@@ -46,15 +68,17 @@ def add_note():
 
 def show_notes():
     """
-    Reads all saved notes aloud.
+    Read all saved notes aloud.
     """
 
-    if not os.path.exists(NOTES_FILE):
+    if not NOTES_FILE.exists():
         speak("You don't have any notes yet.")
         return
 
     with open(NOTES_FILE, "r", encoding="utf-8") as file:
         notes = file.readlines()
+
+    notes = [note.strip() for note in notes if note.strip()]
 
     if not notes:
         speak("You don't have any notes yet.")
@@ -63,31 +87,28 @@ def show_notes():
     speak("Here are your notes.")
 
     for index, note in enumerate(notes, start=1):
-        note = note.strip()
-
-        if note:
-            print(f"{index}. {note}")
-            speak(note)
+        print(f"{index}. {note}")
+        speak(note)
 
 
 def handle_notes(command):
     """
-    Handles note-related voice commands.
+    Handle note-related voice commands.
 
     Returns
     -------
     bool
-        True  -> Note command handled.
+        True  -> Command handled.
         False -> Not a note command.
     """
 
-    command = command.lower()
+    command = command.lower().strip()
 
-    if "take a note" in command:
+    if command in ADD_NOTE_COMMANDS:
         add_note()
         return True
 
-    if "show my notes" in command:
+    if command in SHOW_NOTE_COMMANDS:
         show_notes()
         return True
 

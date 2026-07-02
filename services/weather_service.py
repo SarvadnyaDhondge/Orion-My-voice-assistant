@@ -20,29 +20,48 @@ from config.settings import WEATHER_API_KEY
 
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
+HEADERS = {
+    "User-Agent": "Orion Voice Assistant"
+}
+
 
 def get_weather(city):
     """
-    Returns weather information for a city.
+    Get the current weather for a city.
 
     Parameters
     ----------
     city : str
+        Name of the city.
 
     Returns
     -------
     dict | None
+        Example:
+        {
+            "city": "Pune",
+            "temperature": 31,
+            "description": "clear sky",
+            "humidity": 52
+        }
+
+        Returns None if the request fails.
     """
 
     params = {
         "q": city,
         "appid": WEATHER_API_KEY,
-        "units": "metric"
+        "units": "metric",
     }
 
     try:
 
-        response = requests.get(BASE_URL, params=params, timeout=10)
+        response = requests.get(
+            BASE_URL,
+            params=params,
+            headers=HEADERS,
+            timeout=10,
+        )
 
         response.raise_for_status()
 
@@ -50,11 +69,11 @@ def get_weather(city):
 
         return {
             "city": data["name"],
-            "temperature": data["main"]["temp"],
+            "temperature": round(data["main"]["temp"]),
             "description": data["weather"][0]["description"],
-            "humidity": data["main"]["humidity"]
+            "humidity": data["main"]["humidity"],
         }
 
-    except requests.RequestException as e:
-        print("Weather Service Error:", e)
+    except requests.RequestException:
+        print("Weather service request failed.")
         return None

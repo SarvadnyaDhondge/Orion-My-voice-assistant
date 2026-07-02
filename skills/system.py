@@ -21,6 +21,7 @@ from services.system_service import (
     get_internet_status,
 )
 
+
 BATTERY_COMMANDS = [
     "battery",
     "battery status",
@@ -36,14 +37,14 @@ CPU_COMMANDS = [
     "cpu usage",
     "processor",
     "processor usage",
-    "processor percentage"
+    "processor percentage",
 ]
 
 RAM_COMMANDS = [
     "ram",
     "ram usage",
     "memory",
-    "memory usage"
+    "memory usage",
 ]
 
 DISK_COMMANDS = [
@@ -51,7 +52,7 @@ DISK_COMMANDS = [
     "disk usage",
     "storage",
     "storage usage",
-    "drive usage"
+    "drive usage",
 ]
 
 INTERNET_COMMANDS = [
@@ -79,7 +80,9 @@ def handle_system(command):
 
     command = command.lower().strip()
 
+    # BATTERY
     if command in BATTERY_COMMANDS:
+
         battery = get_battery_status()
 
         if battery is None:
@@ -89,42 +92,61 @@ def handle_system(command):
         status = "charging" if battery["charging"] else "not charging"
 
         speak(
-            f"The battery is {battery['percent']} percent and is currently {status}."
+            f"Battery is at {battery['percent']} percent and {status}."
         )
 
         return True
 
+    # CPU
     if command in CPU_COMMANDS:
+
         cpu = get_cpu_usage()
+
         speak(
-            f"The CPU usage is {cpu['percent']} percent. "
+            f"The CPU usage is {cpu['percent']} percent."
         )
+
         return True
 
+    # RAM
     if command in RAM_COMMANDS:
+
         ram = get_ram_usage()
+
         speak(
             f"The RAM usage is {ram['percent']} percent. "
             f"You are using {ram['used_gb']} gigabytes "
             f"out of {ram['total_gb']} gigabytes."
         )
+
         return True
 
+    # DISK
     if command in DISK_COMMANDS:
+
         disk = get_disk_usage()
+
         speak(
-        f"The C drive is {disk['percent']} percent full. "
-        f"You are using {disk['used_gb']} gigabytes "
-        f"out of {disk['total_gb']} gigabytes."
+            f"The C drive is {disk['percent']} percent full. "
+            f"You are using {disk['used_gb']} gigabytes "
+            f"out of {disk['total_gb']} gigabytes."
         )
+
         return True
-    
+
+    # INTERNET
     if command in INTERNET_COMMANDS:
-        internet = get_internet_status()
-        if internet:
-            speak("You are connected to the internet.")
-        else:
-            speak("You are not connected to the internet.")
+
+        connected = get_internet_status()
+
+        status = (
+            "connected to"
+            if connected
+            else "not connected to"
+        )
+
+        speak(f"You are {status} the internet.")
+
         return True
 
     return False

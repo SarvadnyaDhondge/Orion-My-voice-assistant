@@ -10,8 +10,8 @@ Responsibilities
 - Speak results to the user.
 
 This module does NOT:
-- Directly control system volume
-- Use OS APIs
+- Directly control system volume.
+- Use OS APIs.
 """
 
 from speak import speak
@@ -23,6 +23,7 @@ from services.volume_service import (
     mute_volume,
     unmute_volume,
 )
+
 
 VOLUME_UP_COMMANDS = [
     "volume up",
@@ -42,7 +43,7 @@ VOLUME_DOWN_COMMANDS = [
     "make it quieter",
 ]
 
-MUTE_COMMANDS = [   
+MUTE_COMMANDS = [
     "mute",
     "mute volume",
 ]
@@ -72,23 +73,29 @@ def handle_volume(command: str) -> bool:
     Returns
     -------
     bool
-        True -> command handled
-        False -> not a volume command
+        True -> Command handled.
+        False -> Not a volume command.
     """
 
     command = command.lower().strip()
 
     # CURRENT VOLUME
     if command in VOLUME_COMMANDS:
-        data = get_volume()
-        if data["muted"]:
-            speak(f"The volume is {data['percent']} percent and it is muted.")
+
+        volume = get_volume()
+
+        if volume["muted"]:
+            speak(
+                f"The volume is {volume['percent']} percent and it is muted."
+            )
         else:
-            speak(f"The volume is {data['percent']} percent.")
+            speak(f"The volume is {volume['percent']} percent.")
+
         return True
 
     # VOLUME UP
     if command in VOLUME_UP_COMMANDS:
+
         current = get_volume()
 
         if current["percent"] >= 100:
@@ -102,6 +109,7 @@ def handle_volume(command: str) -> bool:
 
     # VOLUME DOWN
     if command in VOLUME_DOWN_COMMANDS:
+
         current = get_volume()
 
         if current["percent"] <= 0:
@@ -115,27 +123,46 @@ def handle_volume(command: str) -> bool:
 
     # MUTE
     if command in MUTE_COMMANDS:
-        mute_volume()
-        speak("Volume muted.")
+
+        current = get_volume()
+
+        if current["muted"]:
+            speak("The volume is already muted.")
+        else:
+            mute_volume()
+            speak("Volume muted.")
+
         return True
 
     # UNMUTE
     if command in UNMUTE_COMMANDS:
-        unmute_volume()
-        speak("Volume unmuted.")
+
+        current = get_volume()
+
+        if not current["muted"]:
+            speak("The volume is already unmuted.")
+        else:
+            unmute_volume()
+            speak("Volume unmuted.")
+
         return True
 
     # SET VOLUME
     for phrase in SET_VOLUME_COMMANDS:
+
         if command.startswith(phrase):
+
             numbers = [word for word in command.split() if word.isdigit()]
 
-            if numbers:
-                percent = int(numbers[0])
-                set_volume(percent)
-                speak(f"Volume set to {percent} percent.")
-            else:
+            if not numbers:
                 speak("Please tell me a valid volume percentage.")
+                return True
+
+            percent = int(numbers[0])
+
+            result = set_volume(percent)
+
+            speak(f"Volume set to {result['percent']} percent.")
 
             return True
 

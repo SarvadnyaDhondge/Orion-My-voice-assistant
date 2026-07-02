@@ -23,9 +23,12 @@ from speak import speak
 from music import play_song
 
 
+PLAY_COMMAND_PREFIX = "play "
+
+
 def play_music(command):
     """
-    Handles commands that begin with 'play'.
+    Handle music playback commands.
 
     Parameters
     ----------
@@ -39,21 +42,21 @@ def play_music(command):
         False -> Not a music command.
     """
 
-    # This module only handles commands that start with "play".
-    if not command.startswith("play "):
+    if not command.startswith(PLAY_COMMAND_PREFIX):
         return False
 
-    # Extract the song name.
-    song = command.replace("play", "", 1).strip()
+    song = command[len(PLAY_COMMAND_PREFIX):].strip()
     song = song.strip(string.punctuation + " ")
 
-    # Tell the user what Orion is doing.
-    speak(f"Playing {song}")
+    if not song:
+        speak("Please tell me what you want to play.")
+        return True
 
-    # Use the existing function from music.py.
     success = play_song(song)
 
-    if not success:
+    if success:
+        speak(f"Playing {song}")
+    else:
         speak("Sorry, I couldn't find that song.")
 
     return True

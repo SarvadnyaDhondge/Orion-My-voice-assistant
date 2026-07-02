@@ -1,106 +1,96 @@
 # Changelog
 
-All notable changes to **Orion Voice Assistant** will be documented in this file.
+All notable changes to **Orion Voice Assistant** are documented in this file.
 
-The project follows Semantic Versioning during development.
-
----
-
-## [v0.1.0] - Initial Project
-
-### Added
-
-* Initial Orion project structure.
-* Python virtual environment.
-* Basic project architecture.
-* Speech recognition.
-* Text-to-speech engine.
-* Command dispatcher.
-* Wake word detection.
-
----
-
-## [v0.2.0] - Weather System
-
-### Added
-
-* Weather service.
-* Current temperature lookup.
-* Humidity reporting.
-* Weather description.
-* City-based weather queries.
-
-### Improved
-
-* Modular weather service architecture.
-
----
-
-## [v0.3.0] - Search & Notes
-
-### Added
-
-* Google search.
-* Voice note creation.
-* Local note storage.
-
-### Improved
-
-* Better command routing.
-
----
-
-## [v0.4.0] - System Monitoring
-
-### Added
-
-* Battery status.
-* CPU usage.
-* RAM usage.
-* Disk usage.
-* Internet connection status.
-
-### Improved
-
-* Modular system service.
-
----
-
-## [v0.5.0] - Volume Control
-
-### Added
-
-* Current volume status.
-* Volume increase.
-* Volume decrease.
-* Set volume by percentage.
-* Mute.
-* Unmute.
-
-### Improved
-
-* Better command parsing.
-* Volume boundary checks.
-* Improved voice responses.
-* Compatible with latest `pycaw` API.
-
-### Fixed
-
-* Volume interface compatibility issues.
-* Command parsing bugs.
+The project follows **Semantic Versioning (vMAJOR.MINOR.PATCH)** during development.
 
 ---
 
 ## [Unreleased]
 
 ### Planned
+- Brightness control system
+- Internet speed monitoring
+- Screenshot capture
+- Wi-Fi information module
+- Timers and alarms
+- Calendar integration
+- Media controls (play, pause, next, previous)
+- AI conversation improvements
+- Memory and context awareness system
 
-* Brightness control.
-* Internet speed monitoring.
-* Screenshot capture.
-* Wi-Fi information.
-* Timers and alarms.
-* Calendar integration.
-* Media controls.
-* AI conversation improvements.
-* Memory and context awareness.
+---
+
+## [0.5.0] - Volume Control Upgrade
+
+### Added
+- System volume status retrieval
+- Increase/decrease volume controls
+- Set volume by percentage
+- Mute and unmute functionality
+
+### Improved
+- More natural voice responses
+- Better command parsing and recognition
+- Volume boundary protection (0–100%)
+- Improved integration with `pycaw`
+
+### Fixed
+- Audio interface compatibility issues
+- Edge-case command parsing bugs
+- Incorrect volume scaling in some cases
+
+---
+
+## [0.4.0] - System Monitoring
+
+### Added
+- Battery status monitoring
+- CPU usage tracking
+- RAM usage analysis
+- Disk usage monitoring
+- Internet connectivity checker
+
+### Improved
+- Clean separation of system logic into `system_service.py`
+- More structured system response formatting
+
+---
+
+## [0.3.0] - Search & Notes System
+
+### Added
+- Google search via voice
+- Voice-based note creation
+- Local note storage system
+
+### Improved
+- Command routing structure in `commands.py`
+- Better modular skill handling
+
+---
+
+## [0.2.0] - Weather System
+
+### Added
+- OpenWeather API integration
+- Current temperature retrieval
+- Humidity reporting
+- Weather description support
+- City-based weather queries
+
+### Improved
+- Fully modular weather service design
+- Cleaner API separation (`service` vs `skill` layer)
+
+---
+
+## [0.1.0] - Initial Release
+
+### Added
+- Basic Orion project structure
+- Virtual environment setup
+- Speech recognition (Whisper integration)
+- Text-to-speech engine
+- Wake word detection system
+- Command dispatcher architecture

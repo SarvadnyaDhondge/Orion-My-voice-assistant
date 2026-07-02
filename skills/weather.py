@@ -3,14 +3,14 @@ weather.py
 
 This module handles weather-related voice commands.
 
-Responsibilities:
-- Understand the user's command.
+Responsibilities
+----------------
+- Understand weather commands.
 - Extract the city name.
-- Ask the weather service for data.
+- Ask weather_service.py for weather data.
 - Speak the result.
 
-It does NOT communicate directly with OpenWeather.
-That responsibility belongs to weather_service.py.
+This module does NOT communicate directly with the weather API.
 """
 
 from speak import speak
@@ -19,51 +19,41 @@ from services.weather_service import get_weather
 
 def handle_weather(command):
     """
-    Handles weather/temperature commands.
+    Handle weather-related commands.
 
     Returns
     -------
     bool
-        True  -> Weather command handled.
+        True -> Command handled.
         False -> Not a weather command.
     """
 
     command = command.lower().strip()
 
-    # ---------------- Temperature ----------------
-
+    # Determine command type
     if command.startswith("temperature"):
-
-        city = command.replace("temperature", "", 1).strip()
-
-        # Support: "temperature in pune"
-        if city.startswith("in "):
-            city = city[3:].strip()
-
-    # ---------------- Weather ----------------
+        keyword = "temperature"
 
     elif command.startswith("weather"):
-
-        city = command.replace("weather", "", 1).strip()
-
-        # Support: "weather in pune"
-        if city.startswith("in "):
-            city = city[3:].strip()
+        keyword = "weather"
 
     else:
         return False
+
+    # Extract city
+    city = command.replace(keyword, "", 1).strip()
+
+    if city.startswith("in "):
+        city = city[3:].strip()
 
     # Default city
     if not city:
         city = "Pune"
 
-    # Debug (temporary)
-    print("City:", city)
-
     weather = get_weather(city)
 
     if weather is None:
-        speak("Sorry, I couldn't get the temperature.")
+        speak("Sorry, I couldn't get the weather information.")
         return True
 
     speak(

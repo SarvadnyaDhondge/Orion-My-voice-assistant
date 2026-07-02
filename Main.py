@@ -19,79 +19,97 @@ from utils.command_normalizer import normalize_command
 
 
 WAKE_WORD = "come back"
+DEBUG = True
 
 
 speak("Initializing Comeback")
 
 
-def clean_text(text):
+def clean_text(text: str) -> str:
     """
-    Basic cleanup before normalization.
+    Perform basic cleanup before normalization.
     """
 
     if not text:
         return ""
 
     text = text.lower()
-    text = text.replace(",", "")
-    text = text.replace(".", "")
-    text = text.strip()
 
-    return text
+    for char in ",.!?":
+        text = text.replace(char, "")
+
+    return text.strip()
+
+
+def listen_and_prepare() -> tuple[str, str]:
+    """
+    Listen to the user's speech and prepare it for processing.
+
+    Returns
+    -------
+    tuple[str, str]
+        (raw_text, normalized_text)
+
+        Returns ("", "") if nothing was recognized.
+    """
+
+    raw_text = listen()
+    raw_text = clean_text(raw_text)
+
+    if not raw_text:
+        return "", ""
+
+    normalized_text = normalize_command(raw_text)
+
+    return raw_text, normalized_text
 
 
 while True:
 
-    print("\nWaiting for wake word...")
+    if DEBUG:
+        print("\nWaiting for wake word...")
 
     # ---------------- Listen ----------------
 
-    raw_text = listen()
-
-    raw_text = clean_text(raw_text)
+    raw_text, text = listen_and_prepare()
 
     if not raw_text:
         continue
 
-    text = normalize_command(raw_text)
-
-    print("Raw        :", raw_text)
-    print("Normalized :", text)
+    if DEBUG:
+        print("Raw        :", raw_text)
+        print("Normalized :", text)
 
     # ---------------- Wake Word ----------------
 
-    if WAKE_WORD in text:
+    if WAKE_WORD not in text:
+        continue
 
-        command = text.replace(WAKE_WORD, "").strip()
+    command = text.replace(WAKE_WORD, "", 1).strip()
 
-        # Wake word + command together
-        if command:
+    # Wake word + command together
+    if command:
 
+        if DEBUG:
             print("Direct command:", command)
 
-            result = handle_command(command)
+        result = handle_command(command)
 
-        # Only wake word
-        else:
+    # Only wake word
+    else:
 
-            speak("Yes?")
+        speak("Yes?")
 
-            raw_command = listen()
+        raw_command, command = listen_and_prepare()
 
-            raw_command = clean_text(raw_command)
+        if not raw_command:
+            continue
 
-            if not raw_command:
-                continue
-
-            command = normalize_command(raw_command)
-
+        if DEBUG:
             print("Raw command        :", raw_command)
             print("Normalized command :", command)
 
-            result = handle_command(command)
-
-    else:
-        continue
+        result = handle_command(command)
 
     if result == "stop":
         speak("Goodbye")

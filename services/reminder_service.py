@@ -8,6 +8,7 @@ Responsibilities
 - Load reminders from reminders.json
 - Save reminders to reminders.json
 - Add new reminders
+- Delete reminders
 
 This module does NOT:
 - Speak
@@ -21,8 +22,8 @@ import json
 from pathlib import Path
 
 
-# Path to the reminders file
-DATA_FILE = Path("data/reminders.json")
+DATA_DIRECTORY = Path("data")
+DATA_FILE = DATA_DIRECTORY / "reminders.json"
 
 
 def load_reminders():
@@ -38,14 +39,25 @@ def load_reminders():
     if not DATA_FILE.exists():
         return []
 
-    with open(DATA_FILE, "r", encoding="utf-8") as file:
-        return json.load(file)
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as file:
+            return json.load(file)
+
+    except (json.JSONDecodeError, OSError):
+        return []
 
 
 def save_reminders(reminders):
     """
     Save the reminder list to the JSON file.
+
+    Parameters
+    ----------
+    reminders : list
+        List of reminder dictionaries.
     """
+
+    DATA_DIRECTORY.mkdir(parents=True, exist_ok=True)
 
     with open(DATA_FILE, "w", encoding="utf-8") as file:
         json.dump(reminders, file, indent=4)
@@ -59,13 +71,18 @@ def add_reminder(task):
     ----------
     task : str
         The reminder text.
+
+    Returns
+    -------
+    dict
+        The newly created reminder.
     """
 
     reminders = load_reminders()
 
     reminder = {
         "task": task,
-        "completed": False
+        "completed": False,
     }
 
     reminders.append(reminder)
@@ -92,7 +109,7 @@ def delete_reminder(index):
 
     reminders = load_reminders()
 
-    # Convert from 1-based to 0-based indexing
+    # Convert from 1-based indexing to 0-based indexing.
     index -= 1
 
     if index < 0 or index >= len(reminders):

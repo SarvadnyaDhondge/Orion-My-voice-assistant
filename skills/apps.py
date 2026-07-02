@@ -20,20 +20,10 @@ import subprocess
 from speak import speak
 
 
-# Dictionary of applications Orion can launch.
-#
-# Key   -> Voice command spoken by the user
-# Value -> Executable path or command used to start the application
-#
-# Example:
-# User: "come back open chrome"
-# app_name = "chrome"
-# subprocess launches chrome.exe
-
-APPS = {
-    "chrome": r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-    "calculator": "calc.exe",
+APPLICATIONS = {
     "calc": "calc.exe",
+    "calculator": "calc.exe",
+    "chrome": r"C:\Program Files\Google\Chrome\Application\chrome.exe",
     "notepad": "notepad.exe",
     "vs code": "code",
     "vscode": "code",
@@ -42,45 +32,31 @@ APPS = {
 
 def open_app(app_name):
     """
-    Attempts to open a desktop application.
+    Attempt to open a desktop application.
 
     Parameters
     ----------
     app_name : str
-        Name of the application extracted from the voice command.
+        Name of the application.
 
     Returns
     -------
     bool
-        True  -> This module handled the command.
+        True  -> Command handled.
         False -> Application is unknown.
-                 commands.py should let another module
-                 (folders, websites, etc.) try instead.
     """
 
-    # If Orion doesn't know this application,
-    # let another skill try to handle the command.
-    if app_name not in APPS:
+    if app_name not in APPLICATIONS:
         return False
 
+    application = APPLICATIONS[app_name]
+
     try:
-        # Launch the application.
-        subprocess.Popen(APPS[app_name])
-
-        # Speak confirmation.
+        subprocess.Popen(application)
         speak(f"Opening {app_name}")
-
-        # Command handled successfully.
         return True
 
     except Exception as e:
-
-        # Print the error for debugging.
-        print(e)
-
-        # Inform the user.
+        print(f"Failed to open '{app_name}': {e}")
         speak("Sorry, I couldn't open that application.")
-
-        # Return True because Orion recognized
-        # the command even though opening failed.
         return True

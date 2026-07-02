@@ -1,31 +1,64 @@
+"""
+music.py
+
+This module searches YouTube for a song
+and opens the first result in the default browser.
+"""
+
 import webbrowser
+
 from yt_dlp import YoutubeDL
 
 
-def play_song(song_name):
-    try:
-        ydl_opts = {
-            "quiet": True,
-            "extract_flat": True,
-        }
+YDL_OPTIONS = {
+    "quiet": True,
+    "extract_flat": True,
+}
 
-        with YoutubeDL(ydl_opts) as ydl:
+
+def play_song(song_name):
+    """
+    Search YouTube and play the first matching song.
+
+    Parameters
+    ----------
+    song_name : str
+
+    Returns
+    -------
+    bool
+        True  -> Song found.
+        False -> Song not found.
+    """
+
+    try:
+
+        with YoutubeDL(YDL_OPTIONS) as ydl:
+
             results = ydl.extract_info(
                 f"ytsearch1:{song_name}",
-                download=False
+                download=False,
             )
 
-            if results and "entries" in results:
-                video = results["entries"][0]
+        entries = results.get("entries")
 
-                print("Found:", video["title"])
+        if not entries:
+            return False
 
-                url = f"https://www.youtube.com/watch?v={video['id']}"
-                webbrowser.open(url)
+        video = entries[0]
 
-                return True
+        print(f"Found: {video['title']}")
+
+        video_id = video["id"]
+
+        url = f"https://www.youtube.com/watch?v={video_id}"
+
+        webbrowser.open(url)
+
+        return True
 
     except Exception as e:
-        print("Music Error:", e)
 
-    return False
+        print(f"Music Error: {e}")
+
+        return False

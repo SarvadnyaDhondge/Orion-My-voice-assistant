@@ -9,6 +9,7 @@ Responsibilities
 - Read CPU usage.
 - Read RAM usage.
 - Read disk usage.
+- Check internet connectivity.
 
 This module does NOT:
 - Speak
@@ -18,8 +19,13 @@ This module does NOT:
 Those responsibilities belong to skills/system.py.
 """
 
-import psutil
 import socket
+
+import psutil
+
+
+BYTES_PER_GB = 1024 ** 3
+SYSTEM_DRIVE = "C:\\"
 
 
 def get_battery_status():
@@ -45,8 +51,9 @@ def get_battery_status():
 
     return {
         "percent": round(battery.percent),
-        "charging": battery.power_plugged
+        "charging": battery.power_plugged,
     }
+
 
 def get_cpu_usage():
     """
@@ -59,7 +66,6 @@ def get_cpu_usage():
         {
             "percent": 45
         }
-        CPU usage percentage.
     """
 
     cpu_usage = psutil.cpu_percent(interval=1)
@@ -68,9 +74,10 @@ def get_cpu_usage():
         "percent": round(cpu_usage)
     }
 
+
 def get_ram_usage():
     """
-    Get the current RAM usage percentage.
+    Get the current RAM usage.
 
     Returns
     -------
@@ -78,24 +85,25 @@ def get_ram_usage():
         Example:
         {
             "percent": 70,
-            "used": 8.5,
-            "total": 16,
-            "available": 7.5
+            "used_gb": 8.5,
+            "total_gb": 16,
+            "available_gb": 7.5
         }
-        RAM usage percentage.
     """
+
     ram = psutil.virtual_memory()
 
     return {
         "percent": round(ram.percent),
-        "used_gb": round(ram.used / (1024 ** 3), 2),
-        "total_gb": round(ram.total / (1024 ** 3), 2),
-        "available_gb": round(ram.available / (1024 ** 3), 2)
+        "used_gb": round(ram.used / BYTES_PER_GB, 2),
+        "total_gb": round(ram.total / BYTES_PER_GB, 2),
+        "available_gb": round(ram.available / BYTES_PER_GB, 2),
     }
+
 
 def get_disk_usage():
     """
-    Get the current disk usage percentage.
+    Get the current disk usage.
 
     Returns
     -------
@@ -107,17 +115,17 @@ def get_disk_usage():
             "total_gb": 500,
             "free_gb": 200
         }
-        Disk usage percentage.
     """
 
-    disk = psutil.disk_usage("C:\\")
+    disk = psutil.disk_usage(SYSTEM_DRIVE)
 
     return {
         "percent": round(disk.percent),
-        "used_gb": round(disk.used / (1024 ** 3), 2),
-        "total_gb": round(disk.total / (1024 ** 3), 2),
-        "free_gb": round(disk.free / (1024 ** 3), 2)
+        "used_gb": round(disk.used / BYTES_PER_GB, 2),
+        "total_gb": round(disk.total / BYTES_PER_GB, 2),
+        "free_gb": round(disk.free / BYTES_PER_GB, 2),
     }
+
 
 def get_internet_status():
     """
@@ -129,10 +137,10 @@ def get_internet_status():
         True  -> Internet is available.
         False -> No internet connection.
     """
-    
+
     try:
-        # Attempt to connect to a well-known website (Google)
-        socket.create_connection(("8.8.8.8", 53), timeout=5)
+        socket.create_connection(("8.8.8.8", 53), timeout=3)
         return True
+
     except OSError:
         return False

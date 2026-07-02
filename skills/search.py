@@ -21,9 +21,14 @@ from urllib.parse import quote_plus
 from speak import speak
 
 
+SEARCH_COMMAND_PREFIX = "search "
+
+GOOGLE_SEARCH_URL = "https://www.google.com/search?q={}"
+
+
 def search_google(command):
     """
-    Handles Google search commands.
+    Handle Google search commands.
 
     Parameters
     ----------
@@ -37,29 +42,21 @@ def search_google(command):
         False -> Not a Google search command.
     """
 
-    # This module only handles commands
-    # that begin with "search ".
-    if not command.startswith("search "):
+    if not command.startswith(SEARCH_COMMAND_PREFIX):
         return False
 
-    # Extract the search query.
-    query = command.replace("search", "", 1).strip()
+    query = command[len(SEARCH_COMMAND_PREFIX):].strip()
 
-    # Ignore an empty search.
     if not query:
         speak("What would you like me to search?")
         return True
 
-    # Convert spaces into a URL-friendly format.
     encoded_query = quote_plus(query)
 
-    # Build the Google search URL.
-    url = f"https://www.google.com/search?q={encoded_query}"
+    url = GOOGLE_SEARCH_URL.format(encoded_query)
 
-    # Tell the user what Orion is doing.
     speak(f"Searching Google for {query}")
 
-    # Open the search in the default browser.
     webbrowser.open(url)
 
     return True

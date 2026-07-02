@@ -1,47 +1,102 @@
-import sounddevice as sd
-import numpy as np
-from faster_whisper import WhisperModel
+"""
+speech.py
+
+Handles microphone recording and speech-to-text.
+
+Responsibilities
+----------------
+- Record microphone audio.
+- Detect silence.
+- Transcribe speech using Faster-Whisper.
+
+This module does NOT:
+- Speak
+- Understand commands
+- Execute commands
+"""
+
 import queue
 import time
+
+import numpy as np
+import sounddevice as sd
+from faster_whisper import WhisperModel
+
+
+# ================= CONFIGURATION =================
 
 SAMPLE_RATE = 16000
 BLOCK_SIZE = 1024
 
-model = WhisperModel("base", device="cpu", compute_type="int8")
+MIN_RECORD_TIME = 2.5
+SILENCE_THRESHOLD = 0.02
+SILENCE_LIMIT = 0.7
+
+SILENCE_CHUNKS = int(
+    (SILENCE_LIMIT * SAMPLE_RATE) / BLOCK_SIZE
+)
+
+# ================= WHISPER MODEL =================
+
+model = WhisperModel(
+    "base",
+    device="cpu",
+    compute_type="int8",
+)
+
+# ================= AUDIO QUEUE =================
 
 audio_queue = queue.Queue()
 
 
-def callback(indata, frames, t, status):
+def callback(indata, frames, time_info, status):
+    """
+    Audio callback used by sounddevice.
+    """
+
+    if status:
+        print(status)
+
     audio_queue.put(indata.copy())
 
 
-def listen():
+def clear_audio_queue():
+    """
+    Remove any old audio remaining in the queue.
+    """
+
+    while not audio_queue.empty():
+        audio_queue.get_nowait()
+
+
+def listen() -> str:
+    """
+    Listen to the microphone until silence is detected.
+
+    Returns
+    -------
+    str
+        Recognized speech.
+    """
+
     print("Listening...")
 
-    min_record_time = 2.5
+    clear_audio_queue()
+
     record_start = None
-
-    silence_threshold = 0.02
-    silence_limit = 0.7
-    silence_chunks = int((silence_limit * SAMPLE_RATE) / BLOCK_SIZE)
-
-    audio_buffer = []
     silent_counter = 0
-
-    # 🔥 CLEAR OLD QUEUE (VERY IMPORTANT FIX)
-    while not audio_queue.empty():
-        audio_queue.get()
+    audio_buffer = []
 
     with sd.InputStream(
         samplerate=SAMPLE_RATE,
         channels=1,
         dtype="float32",
         blocksize=BLOCK_SIZE,
-        callback=callback
+        callback=callback,
     ):
 
         while True:
+
             chunk = audio_queue.get()
 
             if record_start is None:
@@ -51,37 +106,50 @@ def listen():
 
             volume = np.abs(chunk).mean()
 
-            if volume < silence_threshold:
+            if volume < SILENCE_THRESHOLD:
                 silent_counter += 1
             else:
                 silent_counter = 0
 
             elapsed = time.time() - record_start
 
-            if elapsed > min_record_time and silent_counter > silence_chunks:
+            if (
+                elapsed >= MIN_RECORD_TIME
+                and silent_counter >= SILENCE_CHUNKS
+            ):
                 break
 
-    # 🔥 SAFETY CHECK
     if len(audio_buffer) < 5:
-        print("Too short audio, ignoring...")
+        print("Too little audio captured.")
         return ""
 
     audio = np.concatenate(audio_buffer, axis=0).reshape(-1)
 
-    # 🔥 NORMALIZATION (CRITICAL FOR ACCURACY)
-    audio = audio / (np.max(np.abs(audio)) + 1e-6)
+    peak = np.max(np.abs(audio))
+
+    if peak > 0:
+        audio /= peak
 
     print("Processing...")
 
-    segments, _ = model.transcribe(
-        audio,
-        language="en",
-        beam_size=5,
-        vad_filter=True
-    )
+    try:
 
-    text = " ".join(s.text for s in segments).strip().lower()
+        segments, _ = model.transcribe(
+            audio,
+            language="en",
+            beam_size=5,
+            vad_filter=True,
+        )
 
-    print("You said:", text)
+    except Exception as e:
+
+        print(f"Speech Error: {e}")
+        return ""
+
+    text = " ".join(segment.text for segment in segments)
+
+    text = text.strip().lower()
+
+    print(f"You said: {text}")
 
     return text

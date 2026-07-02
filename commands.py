@@ -1,4 +1,3 @@
-import webbrowser
 import string
 from datetime import datetime
 
@@ -13,35 +12,48 @@ from skills.weather import handle_weather
 from skills.reminder import handle_reminder
 from skills.system import handle_system
 from skills.volume import handle_volume
+from skills.brightness import handle_brightness
 
 
-# ===================== COMMAND HANDLER =====================
+STOP_COMMANDS = [
+    "stop",
+    "exit",
+    "quit",
+]
+
+
+SKILL_HANDLERS = (
+    search_google,
+    handle_weather,
+    handle_reminder,
+    handle_system,
+    play_music,
+    handle_notes,
+    handle_volume,
+    handle_brightness,
+)
+
 
 def handle_command(command):
+    """
+    Route the user's command to the appropriate skill.
+    """
 
-    # Clean command
-    command = command.lower().strip()
-    command = command.strip(string.punctuation + " ")
+    command = command.lower().strip().strip(string.punctuation)
 
     print(f"Executing command: {command}")
 
-    # ================= OPEN =================
+    # ---------------- OPEN ----------------
 
-    if command.startswith("open "):
+    if command.startswith("open"):
 
         item = command.replace("open", "", 1).strip()
-
-        # ---------- Applications ----------
 
         if open_app(item):
             return
 
-        # ---------- Folders ----------
-
         if open_folder(item):
             return
-
-        # ---------- Websites ----------
 
         if open_website(item):
             return
@@ -49,66 +61,31 @@ def handle_command(command):
         speak("I don't know how to open that.")
         return
 
-    # ================= SEARCH =================
+    # ---------------- SKILLS ----------------
 
-    elif search_google(command):
-        return
+    for handler in SKILL_HANDLERS:
+        if handler(command):
+            return
 
-    # ================= WEATHER =================
-    
-    elif handle_weather(command):
-        return
-        
-    # ================= REMINDERS =================
-    
-    elif handle_reminder(command):
-        return
+    # ---------------- TIME ----------------
 
-    # ================= SYSTEM =================
-
-    elif handle_system(command):
-        return
-
-    # ================= MUSIC =================
-
-    elif play_music(command):
-        return
-
-    # ================= NOTES =================
-    
-    elif handle_notes(command):
-        return
-        
-    # ================= VOLUME =================
-
-    elif handle_volume(command):
-        return
-
-    # ================= TIME =================
-
-    elif "time" in command:
-
+    if "time" in command:
         current_time = datetime.now().strftime("%I:%M %p")
         speak(f"The time is {current_time}")
         return
 
-    # ================= IDENTITY =================
+    # ---------------- IDENTITY ----------------
 
-    elif "your name" in command:
-
+    if "your name" in command:
         speak("My name is Orion.")
         return
 
-    # ================= STOP =================
+    # ---------------- STOP ----------------
 
-    elif command in ["stop", "exit", "quit"]:
-
+    if command in STOP_COMMANDS:
         speak("Goodbye")
         return "stop"
 
-    # ================= UNKNOWN =================
+    # ---------------- UNKNOWN ----------------
 
-    else:
-        speak("Sorry, I don't know that command yet.")
-
-    return None
+    speak("Sorry, I don't know that command yet.")

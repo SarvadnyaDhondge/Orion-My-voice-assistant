@@ -3,26 +3,22 @@ command_normalizer.py
 
 Purpose
 -------
-Whisper does not always recognize words correctly.
+Normalize spoken commands before they reach the skills.
 
-Instead of making every skill handle speech mistakes,
-we fix them here.
+Responsibilities
+----------------
+- Convert text to lowercase.
+- Remove punctuation.
+- Remove extra whitespace.
+- Correct common speech-recognition mistakes.
 
-This module receives the raw text from Whisper,
-cleans it,
-replaces common mistakes,
-and returns a standardized command.
-
-This keeps commands.py simple.
+This keeps command handling simple and consistent.
 """
 
 import re
 
 
-# Common Whisper mistakes
 REPLACEMENTS = {
-    # ---------- Temperature ----------
-    "forecast": "temperature",
 
     # ---------- Google ----------
     "gogle": "google",
@@ -37,6 +33,9 @@ REPLACEMENTS = {
     # ---------- Notepad ----------
     "note pad": "notepad",
 
+    # ---------- Temperature ----------
+    "forecast": "temperature",
+
     # ---------- VS Code ----------
     "vscode": "vs code",
 }
@@ -45,6 +44,15 @@ REPLACEMENTS = {
 def normalize_command(command):
     """
     Clean and normalize spoken commands.
+
+    Parameters
+    ----------
+    command : str
+
+    Returns
+    -------
+    str
+        Normalized command.
     """
 
     command = command.lower()
@@ -52,11 +60,15 @@ def normalize_command(command):
     # Remove punctuation
     command = re.sub(r"[^\w\s]", "", command)
 
-    # Remove extra spaces
+    # Remove extra whitespace
     command = " ".join(command.split())
 
-    # Replace commonly misheard words
+    # Correct common recognition mistakes
     for wrong, correct in REPLACEMENTS.items():
-        command = command.replace(wrong, correct)
+        command = re.sub(
+            rf"\b{re.escape(wrong)}\b",
+            correct,
+            command,
+        )
 
     return command
